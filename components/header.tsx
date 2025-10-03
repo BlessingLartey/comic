@@ -11,7 +11,7 @@ export function Header() {
               <div className="w-2 h-6 bg-foreground rounded-sm" />
             </div>
             <span className="text-xl font-semibold tracking-tight">
-              COSMIC{" "}
+              COSMIC SOAPS
             </span>
           </Link>
 
@@ -20,20 +20,32 @@ export function Header() {
               href="/"
               className="text-sm font-medium hover:text-accent transition-colors"
             >
-              Shop
+              Home
             </Link>
-            {/* <Link
-              href="/about"
+            <Link
+              href="/blog"
+              className="text-sm font-medium hover:text-accent transition-colors"
+            >
+              Blog
+            </Link>
+            <Link
+              href="/post-product"
+              className="text-sm font-medium hover:text-accent transition-colors"
+            >
+              Post
+            </Link>
+            <Link
+              href="/"
               className="text-sm font-medium hover:text-accent transition-colors"
             >
               About
             </Link>
             <Link
-              href="/contact"
+              href="/"
               className="text-sm font-medium hover:text-accent transition-colors"
             >
               Contact
-            </Link> */}
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">

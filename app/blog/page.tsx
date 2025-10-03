@@ -1,20 +1,16 @@
 import { Header } from "@/components/header";
-import { ProductCard } from "@/components/product-card";
+import { BlogCard } from "@/components/blog-card";
+import Link from "next/link";
 
-export default async function Home() {
+export default async function BlogPage() {
   const res = await fetch(
-    "https://training.thecosmicelectronics.com/wp-json/wc/v3/products",
+    "https://training.thecosmicelectronics.com/wp-json/wp/v2/posts?_embed&per_page=12",
     {
-      headers: {
-        Authorization: `Basic ${Buffer.from(
-          `${process.env.WC_CONSUMER_KEY}:${process.env.WC_CONSUMER_SECRET}`
-        ).toString("base64")}`,
-      },
       cache: "no-store",
     }
   );
 
-  const products = await res.json();
+  const posts = await res.json();
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,100 +20,124 @@ export default async function Home() {
         {/* Hero Section */}
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-7xl font-bold mb-6 text-balance leading-tight">
-            Handcrafted soaps meets natural luxury
+            Stories & Insights
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Discover our carefully curated collection of artisanal soaps that
-            blend pure ingredients with timeless craftsmanship.
+            Explore the latest trends, expert reviews, and in-depth guides on
+            cutting-edge electronics and technology.
           </p>
         </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
-          <div className="text-center p-6 bg-card rounded-lg border border-border">
-            <div className="text-3xl font-bold mb-2">{products.length}+</div>
-            <div className="text-sm text-muted-foreground">Soaps</div>
+        {/* Featured Post */}
+        {posts.length > 0 && (
+          <div className="mb-20">
+            <div className="card lg:card-side bg-card border border-border overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <figure className="lg:w-1/2 relative aspect-[16/10] lg:aspect-auto">
+                <div className="badge badge-accent absolute top-6 left-6 z-10 border-none text-base px-4 py-3">
+                  Featured
+                </div>
+                <img
+                  src={
+                    posts[0]._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
+                    "/placeholder.svg?height=600&width=800&query=featured blog post" ||
+                    "/placeholder.svg"
+                  }
+                  alt={posts[0].title.rendered}
+                  className="w-full h-full object-cover"
+                />
+              </figure>
+              <div className="card-body lg:w-1/2 p-8 lg:p-12">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                  <span>
+                    {posts[0]._embedded?.author?.[0]?.name || "Admin"}
+                  </span>
+                  <span>•</span>
+                  <span>
+                    {new Date(posts[0].date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+                <h2 className="card-title font-[family-name:var(--font-playfair)] text-3xl lg:text-4xl mb-4 leading-tight text-balance">
+                  {posts[0].title.rendered}
+                </h2>
+                <div
+                  className="text-muted-foreground leading-relaxed line-clamp-4 mb-6"
+                  dangerouslySetInnerHTML={{
+                    __html: posts[0].excerpt.rendered,
+                  }}
+                />
+                <div className="card-actions">
+                  <Link
+                    href={`/blog/${posts[0].slug}`}
+                    className="btn btn-primary btn-lg gap-2"
+                  >
+                    Read Full Article
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="text-center p-6 bg-card rounded-lg border border-border">
-            <div className="text-3xl font-bold mb-2">100%</div>
-            <div className="text-sm text-muted-foreground">Natural</div>
-          </div>
-          <div className="text-center p-6 bg-card rounded-lg border border-border">
-            <div className="text-3xl font-bold mb-2">Free</div>
-            <div className="text-sm text-muted-foreground">Shipping</div>
-          </div>
-          <div className="text-center p-6 bg-card rounded-lg border border-border">
-            <div className="text-3xl font-bold mb-2">Hand</div>
-            <div className="text-sm text-muted-foreground">Made</div>
-          </div>
-        </div>
+        )}
 
-        {/* Products Grid */}
+        {/* Blog Grid */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-[family-name:var(--font-playfair)] text-3xl font-bold">
-              Our Collection
+              Latest Articles
             </h2>
             <div className="flex gap-2">
-              <button className="btn btn-ghost btn-sm">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                  />
-                </svg>
-                Filter
-              </button>
               <select className="select select-bordered select-sm">
-                <option>Sort by</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-                <option>Newest</option>
+                <option>All Categories</option>
+                <option>Reviews</option>
+                <option>Guides</option>
+                <option>News</option>
               </select>
             </div>
           </div>
 
-          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {products.map((product: any) => (
-              <ProductCard key={product.id} product={product} />
+          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.slice(1).map((post: any) => (
+              <BlogCard key={post.id} post={post} />
             ))}
           </div>
         </div>
 
-        {/* CTA Section */}
+        {/* Newsletter CTA */}
         <div className="mt-20 bg-primary text-primary-foreground rounded-2xl p-12 text-center">
           <h2 className="font-[family-name:var(--font-playfair)] text-4xl font-bold mb-4">
-            Need help choosing the perfect soap?
+            Never miss an update
           </h2>
           <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-            Our expert team is here to guide you through our collection and help
-            you find the perfect soaps for your skin type and preferences.
+            Subscribe to our newsletter and get the latest tech insights,
+            product reviews, and exclusive offers delivered to your inbox.
           </p>
-          <button className="btn btn-accent btn-lg">
-            Get Personalized Recommendations
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
+          <div className="max-w-md mx-auto">
+            <div className="join w-full">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="input input-bordered join-item w-full text-foreground"
               />
-            </svg>
-          </button>
+              <button className="btn btn-accent join-item">Subscribe</button>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -201,7 +221,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            <p>© 2025 Handcrafted Soap Shop. All rights reserved.</p>
+            <p>© 2025 Cosmic Electronics. All rights reserved.</p>
           </div>
         </div>
       </footer>
